@@ -14,7 +14,8 @@ dmenu \
 rofi \
 lxappearance \
 network-manager \
-network-manager-gnome
+network-manager-gnome \
+gnome-terminal \
 fonts-dejavu \
 wget curl nano
 
