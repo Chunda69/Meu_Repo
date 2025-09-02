@@ -27,6 +27,4 @@
 20     xserver-xorg-video-all \
 21     xserver-xorg-input-all \
 22     x11-xserver-utils \
-  /home/maquina/Meu_Repo/posinstalacao.sh      I   S    1%
-^G Ajuda    ^O Gravar   ^F Onde está^K Recortar ^T Executar
-^X Sair     ^R Ler o arq^\ Substitui^U Colar    ^J Justifica
+  
