@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-sudo apt update && sudo apt instal>
-xorg \
+sudo apt update && sudo apt install xorg \
 xserver-xorg-video-all \
 xserver-xorg-input-all \
 x11-xserver-utils \
@@ -8,6 +7,7 @@ mesa-utils \
 lightdm \
 lightdm-gtk-greeter \
 i3 \
+slick-greeter\
 i3status \
 i3lock \
 dmenu \
