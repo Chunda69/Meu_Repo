@@ -19,6 +19,7 @@ network-manager-gnome \
 gnome-terminal \
 fonts-dejavu \
 wget curl nano
-
+#Ativar o lightdm!
 sudo systemctl enable lightdm
 sudo reboot
+#C'est fini!!
