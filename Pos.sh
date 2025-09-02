@@ -11,6 +11,7 @@ slick-greeter\
 i3status \
 i3lock \
 dmenu \
+firefox \
 rofi \
 lxappearance \
 network-manager \
