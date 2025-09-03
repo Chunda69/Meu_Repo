@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#Aqui inicia amágica!
 sudo apt update && sudo apt install xorg \
 xserver-xorg-video-all \
 xserver-xorg-input-all \
