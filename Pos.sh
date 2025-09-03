@@ -8,7 +8,6 @@ mesa-utils \
 lightdm \
 lightdm-gtk-greeter \
 i3 \
-slick-greeter\
 i3status \
 i3lock \
 dmenu \
