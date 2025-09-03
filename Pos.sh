@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-#Aqui inicia amágica!
-sudo apt update && sudo apt install xorg \
+#Aqui inicia a mágica!
+sudo apt update && sudo apt install -y \
+xorg \
 xserver-xorg-video-all \
 xserver-xorg-input-all \
 x11-xserver-utils \
@@ -8,6 +9,7 @@ mesa-utils \
 lightdm \
 lightdm-gtk-greeter \
 i3 \
+slick-greeter \
 i3status \
 i3lock \
 dmenu \
