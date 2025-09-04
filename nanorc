@@ -1,0 +1,53 @@
+## =========[ INTERFACE ]=========
+set linenumbers             # números de linha à esquerda
+set indicator               # “scrollbar” à direita
+set minibar                 # barra de título compacta embaixo
+set constantshow            # linha/coluna sempre visíveis
+set stateflags              # mostra flags (I, M, L, R, S)
+set mouse                   # mouse para mover cursor/atalhos
+#set nohelp                 # (opcional) oculta ajuda de rodapé
+#set zero                   # (opcional) modo tela cheia minimalista
+## =========[ CORES DA UI ]=========
+set boldtext
+set titlecolor      white,black
+set statuscolor     black,lightcyan
+set promptcolor     black,lightcyan
+set minicolor       white,black
+set keycolor        white,black
+set numbercolor     lightcyan,black
+set selectedcolor   black,lightyellow
+set spotlightcolor  black,lightyellow   # destaque de busca
+set stripecolor     black,lightcyan     # cor da guia vertical
+set scrollercolor   white,black         # cor do indicador
+## =========[ EDIÇÃO / TEXTO ]=========
+set autoindent
+set smarthome                  # Home inteligente (início do texto)
+set matchbrackets "(<[{)>]}"   # localizar pares de colchetes
+set softwrap                   # quebra de linha visual (não grava)
+set atblanks                   # quebra suave em espaços/tabs
+set fill 80                    # coluna alvo para quebra dura/justify
+#set guidestripe 140             # linha guia na coluna 100
+set trimblanks                 # remove espaços ao quebrar/justificar
+set cutfromcursor              # ^K corta do cursor até o fim da linha
+set zap                        # Backspace apaga seleção inteira
+set tabsize 4
+set tabstospaces               # Tab digita espaços
+set casesensitive              # buscas diferenciam maiúsc./minúsc. (tire se não quiser)
+#set regexp                    # (opcional) buscas por regex por padrão
+## =========[ ARQUIVOS / FORMATO ]=========
+set unix                      # salva por padrão em formato Unix
+set noconvert                 # não converte EOL ao abrir
+set nonewlines                # não adiciona \n final automaticamente
+set locking                   # lockfile estilo vim para edição concorrente
+set saveonexit                # salva alterações ao sair sem perguntar
+
+## =========[ COMPATIBILIDADE / TECLAS ]=========
+#set rebinddelete             # use se Backspace/Delete “inverterem”
+#set rawsequences             # só se precisar (desativa mouse)
+set preserve                  # preserva ^S/^Q do terminal
+## =========[ JUSTIFICAR / PONTUAÇÃO / CITAÇÃO ]=========
+set punct "!.?"
+set brackets "’)>]}"         # fecha parágrafo com pontuação+colchetes
+set quotestr "^([ \t]*([!#%:;>|}]|//))+"
+
+
