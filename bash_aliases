@@ -427,3 +427,165 @@ remover() {
     sudo apt remove --purge -y "$@"
     sudo apt autoremove -y
 }
+
+# ===== Git Menu Interativo =====
+# Uso:
+#   gitmenu                 # usa o repositório da pasta atual
+#   gitmenu /caminho/repo   # abre menu já apontando para o repo informado
+#
+# Dica: rode dentro do repo. O menu checa tudo e orienta.
+
+# Descobre branch padrão de forma segura (main/master/qualquer)
+_git_default_branch() {
+    git rev-parse --abbrev-ref origin/HEAD 2>/dev/null | sed 's|origin/||' \
+    || git symbolic-ref --short HEAD 2>/dev/null \
+    || echo "main"
+}
+
+# Checa se estamos num repo
+_git_ensure_repo() {
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        echo "⚠️  Aqui não é um repositório Git. Entre em um repo ou passe o caminho: gitmenu /caminho/repo"
+        return 1
+    fi
+}
+
+gitmenu() {
+    # Se foi passado caminho, entra nele
+    if [[ -n "$1" ]]; then
+        if [[ -d "$1" ]]; then
+            cd "$1" || { echo "Erro ao entrar em $1"; return 1; }
+        else
+            echo "Caminho inválido: $1"
+            return 1
+        fi
+    fi
+
+    _git_ensure_repo || return 1
+
+    local RESET="\033[0m" BOLD="\033[1m"
+    local BLUE="\033[34m" GREEN="\033[32m" YELLOW="\033[33m" RED="\033[31m"
+    local BRANCH DEFAULT_BRANCH REMOTE
+
+    while true; do
+        _git_ensure_repo || return 1
+        BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+        DEFAULT_BRANCH="$(_git_default_branch)"
+        REMOTE="$(git remote get-url origin 2>/dev/null || echo '(sem origin)')"
+
+        echo -e "\n${BOLD}=== Git Menu (${BLUE}${BRANCH}${RESET}${BOLD}) ===${RESET}"
+        echo -e "Repo: ${YELLOW}$(basename "$(git rev-parse --show-toplevel)")${RESET}"
+        echo -e "Remoto: ${YELLOW}${REMOTE}${RESET}"
+        echo -e "Branch padrão (push/pull): ${GREEN}${DEFAULT_BRANCH}${RESET}\n"
+
+        echo "1) Status"
+        echo "2) Diff (o que mudou)"
+        echo "3) Add (tudo ou arquivos)"
+        echo "4) Commit"
+        echo "5) Push"
+        echo "6) Pull"
+        echo "7) Log (10 últimos)"
+        echo "8) Stash (guardar mudanças)"
+        echo "9) Criar/Switch de branch"
+        echo "10) Sincronizar (pull -> add -> commit -> push)"
+        echo "11) Trocar repo (cd para outro caminho)"
+        echo "0) Sair"
+
+        read -rp "Escolha: " op
+        case "$op" in
+            1)
+                echo -e "${BOLD}git status${RESET}"
+                git status
+                ;;
+            2)
+                echo -e "${BOLD}git diff${RESET}"
+                git diff
+                ;;
+            3)
+                read -rp "Adicionar tudo (a) ou listar arquivos (l)? [a/l]: " modo
+                if [[ "$modo" == "l" ]]; then
+                    echo "Digite arquivos separados por espaço (TAB completa):"
+                    read -r arquivos
+                    [[ -n "$arquivos" ]] && git add $arquivos
+                else
+                    git add -A
+                fi
+                git status -s
+                ;;
+            4)
+                read -rp "Mensagem do commit: " msg
+                if [[ -z "$msg" ]]; then
+                    echo -e "${RED}Mensagem vazia. Abortado.${RESET}"
+                else
+                    git commit -m "$msg" || echo -e "${YELLOW}Nada para commitar?${RESET}"
+                fi
+                ;;
+            5)
+                # Garante upstream se não existir
+                if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+                    echo -e "${YELLOW}Upstream não configurado. Enviando para origin/${DEFAULT_BRANCH} e definindo upstream...${RESET}"
+                    git push -u origin "$DEFAULT_BRANCH" || continue
+                else
+                    git push || echo -e "${RED}Falha no push.${RESET}"
+                fi
+                ;;
+            6)
+                git pull origin "$DEFAULT_BRANCH" || echo -e "${RED}Falha no pull.${RESET}"
+                ;;
+            7)
+                git log --oneline --graph --decorate -n 10
+                ;;
+            8)
+                echo "1) stash save   2) stash list   3) stash pop   4) stash drop"
+                read -rp "Opção stash: " st
+                case "$st" in
+                    1) read -rp "Mensagem do stash (opcional): " sm; git stash save "$sm" ;;
+                    2) git stash list ;;
+                    3) git stash pop ;;
+                    4) git stash drop ;;
+                    *) echo "Opção inválida." ;;
+                esac
+                ;;
+            9)
+                echo "1) Criar nova branch   2) Trocar para branch existente   3) Listar branches"
+                read -rp "Opção: " bopt
+                case "$bopt" in
+                    1) read -rp "Nome da nova branch: " nb; [[ -n "$nb" ]] && git checkout -b "$nb" ;;
+                    2) read -rp "Nome da branch: " eb; [[ -n "$eb" ]] && git checkout "$eb" ;;
+                    3) git branch -a ;;
+                    *) echo "Opção inválida." ;;
+                esac
+                ;;
+            10)
+                echo -e "${BOLD}${BLUE}-> Pull${RESET}"; git pull origin "$DEFAULT_BRANCH" || true
+                echo -e "${BOLD}${BLUE}-> Add${RESET}"; git add -A
+                read -rp "Mensagem do commit (ou deixe vazio para pular): " m2
+                if [[ -n "$m2" ]]; then
+                    git commit -m "$m2" || echo "Nada para commitar."
+                fi
+                echo -e "${BOLD}${BLUE}-> Push${RESET}"
+                if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+                    git push -u origin "$DEFAULT_BRANCH" || echo -e "${RED}Falha no push.${RESET}"
+                else
+                    git push || echo -e "${RED}Falha no push.${RESET}"
+                fi
+                ;;
+            11)
+                read -rp "Digite o caminho do repositório: " novo
+                if [[ -d "$novo" ]]; then
+                    cd "$novo" || { echo "Erro ao entrar em $novo"; continue; }
+                    _git_ensure_repo || { echo "Pasta não é repo."; continue; }
+                else
+                    echo "Caminho inválido."
+                fi
+                ;;
+            0)
+                echo "Até mais!"
+                break
+                ;;
+            *)
+                echo "Opção inválida."
+                ;;
+        esac
+    done
+}
