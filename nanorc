@@ -50,4 +50,4 @@ set punct "!.?"
 set brackets "’)>]}"         # fecha parágrafo com pontuação+colchetes
 set quotestr "^([ \t]*([!#%:;>|}]|//))+"
 
-
+set noconvert
